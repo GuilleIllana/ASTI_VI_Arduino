@@ -2,6 +2,9 @@
 #define _ROBOT_CHULO_
 
 #include "Arduino.h"
+#include "I2Cdev.h"
+#include "Wire.h"
+#include <MPU6050_light.h>
 #include <QTRSensors.h>
 
 //Velocidades
@@ -23,11 +26,11 @@ class Robot
     void brake();
     void derecha(int IPWM);
     void izquierda(int DPWM);
+    void siguelineas(int* integral, int* lastError);
+    bool checkIntersection();
     void QTRcalibration();
     int QTRreadLine();
     uint16_t* QTRreadRawValues();
-    void siguelineas(int* integral, int* lastError);
-    bool checkIntersection();
     
   private:
     int _in1;
@@ -37,6 +40,7 @@ class Robot
     int _en1;
     int _en2;
     QTRSensors qtr;
+    
 };
 
 #endif
