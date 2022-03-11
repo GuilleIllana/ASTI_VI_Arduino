@@ -1,5 +1,5 @@
 #include "robot.h"
-
+#include "Arduino.h"
 
 Robot::Robot(int en1, int en2, int in1,int in2, int in3, int in4){
     pinMode(en1, OUTPUT);
@@ -104,13 +104,6 @@ int Robot::QTRreadLine() {
 }
 
 
-uint16_t* Robot::QTRreadRawValues() {
-  uint16_t* sensorValues;
-  int position = qtr.readLineBlack(sensorValues); //Lectura de la posición de la linea con respecto al robot
-  return sensorValues;
-}
-
-
 void Robot::siguelineas(int* integral, int* lastError) {
   int position = QTRreadLine(); //Lectura de la posición de la linea con respecto al robot
   int error =  position - 3500; //El error irá desde +3500 a -3500 si es >0 linea a izq del sensor, si es <0 linea a la dch del sensor
@@ -129,8 +122,8 @@ void Robot::siguelineas(int* integral, int* lastError) {
 
 
 bool Robot::checkIntersection() {
-  uint16_t* sensorValues;
-  sensorValues = QTRreadRawValues(); //Lectura de la posición de la linea con respecto al robot
+  uint16_t sensorValues[8];
+  int pos = qtr.readLineBlack(sensorValues);
   if (sensorValues[1] > 800 && sensorValues[7] > 800) return true;
   else return false;
 }

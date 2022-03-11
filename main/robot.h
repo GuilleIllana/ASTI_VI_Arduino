@@ -1,17 +1,17 @@
 #ifndef _ROBOT_CHULO_
 #define _ROBOT_CHULO_
 
-#include "Arduino.h"
+
 #include "I2Cdev.h"
 #include "Wire.h"
 #include <MPU6050_light.h>
 #include <QTRSensors.h>
 
 //Velocidades
-#define rightMaxSpeed 150 // max speed of the robot (0-255)
-#define leftMaxSpeed 150 // max speed of the robot (0-255)
-#define rightBaseSpeed 100 // this is the speed at which the motors should spin when the robot is perfectly on the line (0-255)
-#define leftBaseSpeed 100  // this is the speed at which the motors should spin when the robot is perfectly on the line (0-255)
+#define rightMaxSpeed 200 // max speed of the robot (0-255)
+#define leftMaxSpeed 200 // max speed of the robot (0-255)
+#define rightBaseSpeed 150 // this is the speed at which the motors should spin when the robot is perfectly on the line (0-255)
+#define leftBaseSpeed 150  // this is the speed at which the motors should spin when the robot is perfectly on the line (0-255)
 
 //Sensor siguelineas
 #define Kp 0.5 // experimentar (valores bajos)
@@ -30,7 +30,6 @@ class Robot
     bool checkIntersection();
     void QTRcalibration();
     int QTRreadLine();
-    uint16_t* QTRreadRawValues();
     
   private:
     int _in1;
