@@ -1,9 +1,9 @@
 #include "casilla.h"
 
-Casilla::Casilla(int row, int col, bool occup, float dist){
+Casilla::Casilla(int row, int col, bool avail, float dist){
     _row = row;
     _col = col;
-    _occup = occup;
+    _avail = avail;
     _dist = dist;
 }
 
@@ -18,8 +18,8 @@ int Casilla::getCol() {
 }
 
 
-int Casilla::getOccup() {
-  return _occup;
+int Casilla::getAvail() {
+  return _avail;
 }
 
 
@@ -33,8 +33,8 @@ bool Casilla::getExpl() {
 }
 
 
-void Casilla::setOccup(bool occup) {
-  _occup = occup;
+void Casilla::setAvail(bool avail) {
+  _avail = avail;
 }
 
 

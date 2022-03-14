@@ -61,9 +61,14 @@ void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
   pinMode(LED_BUILTIN, OUTPUT);
-  robot.QTRcalibration();
-  IMUcalibration(); // Falla la calibración porque xdddddddddddddddddddddddddddddddddddddd
-  
+  //robot.QTRcalibration();
+  //IMUcalibration(); // Falla la calibración porque xdddddddddddddddddddddddddddddddddddddd
+  Casilla* Recorrido;
+  int robs[] = {1,2,4};
+  int cobs[] = {1,2,4};
+  Cuadricula cuadricula(5, 5, robs, cobs, 3); // FUNCIONA
+  //cuadricula.printTablero();
+  Recorrido = cuadricula.Planner(0, 0, 4, 3);
 }
 
 void loop() {
@@ -81,10 +86,10 @@ void loop() {
 //  delay(500);
 //  giro_imu(false, 69-4);
 //  delay(500);
-  if (robot.checkIntersection()){
-    robot.brake();
-    giro_imu(false, 69-4);
-    robot.brake();
-  }
-  robot.siguelineas(&integral, &lastError);
+//  if (robot.checkIntersection()){
+//    robot.brake();
+//    giro_imu(false, 69-4);
+//    robot.brake();
+//  }
+//  robot.siguelineas(&integral, &lastError);
 }

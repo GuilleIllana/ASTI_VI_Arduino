@@ -9,15 +9,17 @@
 class Cuadricula
 {
   public:
-    Cuadricula(int rows, int cols, int row_init, int col_init, int obs_row[], int obs_col[], int nobs);
-    int *Planner(int ro, int co, int rf, int cf);
-    int minDistance(int dist[], bool sptSet[]);
+    Cuadricula(int rows, int cols, int obs_row[], int obs_col[], int nobs);
+    Casilla *Planner(int ro, int co, int rf, int cf);
+    int minDistance(int n);
+    void printTablero();
+    void printDistancia();
   private:
     int _rows;
     int _cols;
     int _posr;
     int _posc;
-    Casilla** Tablero;
+    Casilla* Tablero;
 };
 
 #endif
