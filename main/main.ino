@@ -13,10 +13,10 @@ Robot robot(2, 3, 30, 32, 34, 36);
 // Cuadricula
 int robs[] = {1,2,4};
 int cobs[] = {1,2,4};
-Cuadricula cuadricula(6, 6, robs, cobs, 0);
+Cuadricula cuadricula(6, 6, robs, cobs, 3);
 
 // Planificador
-Casilla* Recorrido;
+int* Recorrido;
 
 void IMUcalibration() {
   Wire.begin();
@@ -71,12 +71,25 @@ void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
   //robot.QTRcalibration();
   //IMUcalibration(); // Falla la calibración porque xdddddddddddddddddddddddddddddddddddddd
-  // cuadricula.printDistancia();
-  Recorrido = cuadricula.Planner(1, 1, 4, 4);
-  // Serial.print(Recorrido[0].getRow());
+  //cuadricula.printTablero();
+  Recorrido = cuadricula.Planner(1, 0, 3, 3);
+  Serial.print("Resultados:");
+  Serial.print(Recorrido[0]);
+  Serial.print('\t');
+  Serial.print(Recorrido[1]);
+  Serial.print('\t');
+  Serial.print(Recorrido[2]);
+  Serial.print('\t');
+  Serial.print(Recorrido[3]);
+  Serial.print('\t');
+  Serial.print(Recorrido[4]);
+  Serial.print('\t');
+  Serial.print(Recorrido[5]);
 }
 
 void loop() {
+ 
+   //Serial.print("Resultados:");
   // put your main code here, to run repeatedly:
   // robot.derecha(2);
   // robot.adelante(200, 200);
