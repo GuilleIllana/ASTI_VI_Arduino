@@ -8,7 +8,7 @@
 class Casilla
 {
   public:
-    Casilla(int row, int col, bool occup, float dist);
+    Casilla(int row, int col);
     int getRow();
     int getCol();
     int getAvail();

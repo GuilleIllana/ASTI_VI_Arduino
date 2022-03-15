@@ -1,10 +1,11 @@
 #include "casilla.h"
 
-Casilla::Casilla(int row, int col, bool avail, float dist){
+Casilla::Casilla(int row, int col){
     _row = row;
     _col = col;
-    _avail = avail;
-    _dist = dist;
+    _avail = true;
+    _dist = 0;
+    _expl = false;
 }
 
 

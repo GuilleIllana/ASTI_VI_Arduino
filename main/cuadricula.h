@@ -14,12 +14,11 @@ class Cuadricula
     int minDistance(int n);
     void printTablero();
     void printDistancia();
+    Casilla* Tablero;
   private:
     int _rows;
     int _cols;
-    int _posr;
-    int _posc;
-    Casilla* Tablero;
+    
 };
 
 #endif

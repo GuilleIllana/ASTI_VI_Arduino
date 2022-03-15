@@ -3,49 +3,53 @@
 Cuadricula::Cuadricula(int rows, int cols, int obs_row[], int obs_col[], int nobs) {
     _rows = rows;
     _cols = cols;
-    _posr = 0;
-    _posc = 0;
     
     Tablero = (Casilla*)malloc(rows * cols * sizeof(Casilla));
         
-    // Calling constructor
+    // Construcción del tablero
     for (int i = 0; i < rows; i++)
         for (int j = 0; j < cols; j++)
-          Tablero[i*rows + j] = Casilla(i,j,true,0);
+          Tablero[i*rows + j] = Casilla(i,j);
 
     // Adición de obstáculos
     for (int i = 0; i < nobs; i++)
-      Tablero[rows*obs_row[i]+obs_col[i]].setAvail(false);
-    
+      Tablero[rows*obs_row[i]+obs_col[i]].setAvail(false);    
 }
 // A utility function to find the vertex with minimum distance value, from
 // the set of vertices not yet included in shortest path tree
 int Cuadricula::minDistance(int n)  {
-    // Initialize min value
-    float min = 99.0;
-    int min_index;
-    int idx[] = {n-_rows, n+_rows, n+1, n-1};
-    int count = 4;
-    for (int i = 1; i < 4; i++){
-      if (idx[i] > _rows*_cols - 1 || idx[i] < 0) {
-        for (int j = i; j < 4; ++j)
-          idx[j] = idx[j+1];
-        count--;
-      }
+  // Initialize min value
+  float min = 99.0;
+  int min_index;
+
+  // Inicialización de las posibles casillas
+  int idx[] = {n-_rows, n+_rows, n+1, n-1};
+  int idx_g[4];
+  int count = 0;
+
+  // Comprobación de cada casilla
+  for (int i = 0; i < 4; i++){
+    if (idx[i] < _rows*_cols || idx[i] > 0) {
+      idx_g[count] = idx[i];
+      count++;
     }
-          
-    for (int v = 0; v < count; v++)
-        if (Tablero[idx[v]].getExpl() == false && Tablero[idx[v]].getDist() <= min && Tablero[idx[v]].getAvail() == true)
-            min = Tablero[idx[v]].getDist(), min_index = idx[v];
- 
-    return min_index;
+  }
+
+  // Obtención del índice de la casilla con las distancia mínima
+  for (int v = 0; v < count; v++) {
+    if (Tablero[idx_g[v]].getExpl() == false && Tablero[idx_g[v]].getDist() <= min && Tablero[idx_g[v]].getAvail() == true) {
+      min = Tablero[idx_g[v]].getDist();
+      min_index = idx_g[v];
+    }
+  }
+  return min_index;
 }
 
 Casilla* Cuadricula::Planner(int ro, int co, int rf, int cf) {
   // Function that implements Dijkstra's single source shortest path algorithm
   // for a graph represented using adjacency matrix representation 
   int count = 0, idx = ro*_rows+co;
-  Casilla *Recorrido;
+  Casilla* Recorrido;
   
   // Initialize all distances and stpSet[] as false
   for (int i = 0; i < _rows; i++)
@@ -60,15 +64,10 @@ Casilla* Cuadricula::Planner(int ro, int co, int rf, int cf) {
     
   Tablero[ro*_rows + co].setAvail(true);
   Tablero[rf*_rows + cf].setAvail(true); 
-
-  // printTablero();
-  printDistancia();
   
   Recorrido[count] = Tablero[ro*_rows + co];
   count++;
   
-  Serial.print(idx);
-  Serial.println();
   // Find shortest path for all vertices
   while (idx != rf*_rows + cf) {
     // Pick the minimum distance vertex from the set of vertices not
@@ -78,9 +77,8 @@ Casilla* Cuadricula::Planner(int ro, int co, int rf, int cf) {
     // Mark the picked vertex as processed
     Tablero[idx].setExpl(true);
  
-    Recorrido[count] = Tablero[idx];
-    Serial.print(count);
-    // Serial.print(Recorrido[count].getRow(),Recorrido[count].getCol());
+    Recorrido[count] = Casilla(Tablero[idx].getRow(),Tablero[idx].getCol());
+    Serial.print(Recorrido[count].getRow(),Recorrido[count].getCol());
     Serial.println();
     count++;
  }

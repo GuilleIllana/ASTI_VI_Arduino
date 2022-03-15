@@ -5,10 +5,18 @@ int integral = 0;
 int derivado = 0;
 int lastError = 0;
 
-Robot robot(2, 3, 30, 32, 34, 36);
-//Cuadricula cuadricula(9,9,1,1);
 MPU6050 mpu(Wire);
 
+// Robot
+Robot robot(2, 3, 30, 32, 34, 36);
+
+// Cuadricula
+int robs[] = {1,2,4};
+int cobs[] = {1,2,4};
+Cuadricula cuadricula(6, 6, robs, cobs, 0);
+
+// Planificador
+Casilla* Recorrido;
 
 void IMUcalibration() {
   Wire.begin();
@@ -63,12 +71,9 @@ void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
   //robot.QTRcalibration();
   //IMUcalibration(); // Falla la calibración porque xdddddddddddddddddddddddddddddddddddddd
-  Casilla* Recorrido;
-  int robs[] = {1,2,4};
-  int cobs[] = {1,2,4};
-  Cuadricula cuadricula(5, 5, robs, cobs, 3); // FUNCIONA
-  //cuadricula.printTablero();
-  Recorrido = cuadricula.Planner(0, 0, 4, 3);
+  // cuadricula.printDistancia();
+  Recorrido = cuadricula.Planner(1, 1, 4, 4);
+  // Serial.print(Recorrido[0].getRow());
 }
 
 void loop() {
