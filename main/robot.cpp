@@ -124,6 +124,6 @@ void Robot::siguelineas(int* integral, int* lastError) {
 bool Robot::checkIntersection() {
   uint16_t sensorValues[8];
   int pos = qtr.readLineBlack(sensorValues);
-  if (sensorValues[1] > 600 && sensorValues[7] > 600) return true;
+  if (sensorValues[1] > 400 && sensorValues[7] > 400) return true;
   else return false;
 }

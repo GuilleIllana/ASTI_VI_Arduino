@@ -1,6 +1,7 @@
 #include "cuadricula.h"
 #include <QTRSensors.h>
 #include "Arduino.h"
+
 Cuadricula::Cuadricula(int rows, int cols, int obs_row[], int obs_col[], int nobs) {
     _rows = rows;
     _cols = cols;
@@ -17,7 +18,6 @@ Cuadricula::Cuadricula(int rows, int cols, int obs_row[], int obs_col[], int nob
     // Adición de obstáculos
     for (int i = 0; i < nobs; i++){
       Tablero[rows*obs_row[i]+obs_col[i]].setAvail(false);
-      //Serial.println("hola");
     }  
 }
 
@@ -34,7 +34,7 @@ int Cuadricula::minDistance(int n)  {
     int dif_r = abs(Tablero[idx[i]].getRow() - Tablero[n].getRow());
     int dif_c = abs(Tablero[idx[i]].getCol() - Tablero[n].getCol());
     int sum = dif_r + dif_c;
-    if ((idx[i] < (_rows*_cols)) ||( idx[i] >= 0 )|| (sum == 1)) {
+    if ((idx[i] < (_rows*_cols)) && ( idx[i] >= 0 ) && (sum == 1)) {
       idx_g[count] = idx[i];
       count++;
     }
@@ -53,15 +53,13 @@ int Cuadricula::minDistance(int n)  {
   }
   return min_index;
 }
-extern int* Recorrido;
-int* Cuadricula::Planner(int ro, int co, int rf, int cf) {
+
+int Cuadricula::Planner(int ro, int co, int rf, int cf, int Recorrido[]) {
   // Function that implements Dijkstra's single source shortest path algorithm
   // for a graph represented using adjacency matrix representation 
   int count = 0, idx_ant = ro*_rows+co;
-  int idx;
-  
-  Recorrido = (int*)malloc(36*sizeof(int));
-  
+  int idx = 0;
+    
   // Initialize all distances and explore as false
   for (int i = 0; i < _rows; i++) {
     for (int j = 0; j < _cols; j++) {
@@ -93,12 +91,8 @@ int* Cuadricula::Planner(int ro, int co, int rf, int cf) {
 
     idx_ant = idx;
  }
-// for (int i = 0; i < count; i++){
-//    Serial.print(Recorrido[i]);
-//    Serial.print("\t"); 
-// }
 
- return Recorrido;
+ return count;
 }
 
 
@@ -106,10 +100,10 @@ void Cuadricula::printTablero() {
     // Calling printer
     for (int i = 0; i < _rows; i++) {
         for (int j = 0; j < _cols; j++) {
-          //Serial.print(Tablero[i*_rows + j].getAvail());
-          //Serial.print('\t');
+          Serial.print(Tablero[i*_rows + j].getAvail());
+          Serial.print('\t');
         }
-    //Serial.println();
+    Serial.println();
     }
 }
 
@@ -123,5 +117,115 @@ void Cuadricula::printDistancia() {
         }
     Serial.println();
     }
+}
+
+void Cuadricula::MovGenerator(int nR, int* Recorrido, int* Movimientos) { // Movimientos: 0-siguelineas, 1-giro izquierda, 2-giro derecha 
+  int ori; // 0-derecha, 1-arriba, 2-izquierda, 3-abajo;
+
+  if (Recorrido[0] < _cols) {
+    ori = 3;
+  }
+  else if (Recorrido[0] % _cols == 0) {
+    ori = 0;
+  }
+  else if ((Recorrido[0] > _cols*(_rows-1)) && (Recorrido[0] < _rows*_cols)) {
+    ori = 1;
+  }
+  else {
+    ori = 2;
+  }
+
+  Movimientos[0] = 0;
+  for (int i = 1; i < nR; i++) {
+    int difr = Tablero[Recorrido[i+1]].getRow() - Tablero[Recorrido[i]].getRow();
+    int difc = Tablero[Recorrido[i+1]].getCol() - Tablero[Recorrido[i]].getCol();
+    int dif = abs(difr) - abs(difc); // 1 - aumenta fila, -1 - aumenta columna
+    switch (dif)  {
+      case 1:
+          if (difr > 0) {
+            switch (ori) {
+              case 0:
+                Movimientos[i] = 2;
+                break;
+              case 1:
+                Movimientos[i] = 3;
+                break;
+              case 2:
+                Movimientos[i] = 1;
+                break;
+              case 3:
+                Movimientos[i] = 0;
+                break;
+              default:
+                Movimientos[i] = 0;
+            }
+            ori = 3;
+          }
+          else if (difr < 0) {
+            switch (ori) {
+              case 0:
+                Movimientos[i] = 1;
+                break;
+              case 1:
+                Movimientos[i] = 0;
+                break;
+              case 2:
+                Movimientos[i] = 2;
+                break;
+              case 3:
+                Movimientos[i] = 3;
+                break;
+              default:
+                Movimientos[i] = 0;
+            }
+            ori = 1;
+          }
+          break;
+      case -1:
+          if (difc > 0) {
+            switch (ori) {
+              case 0:
+                Movimientos[i] = 0;
+                break;
+              case 1:
+                Movimientos[i] = 2;
+                break;
+              case 2:
+                Movimientos[i] = 3;
+                break;
+              case 3:
+                Movimientos[i] = 1;
+                break;
+              default:
+                Movimientos[i] = 0;
+            }
+            ori = 0;
+          }
+          else if (difc < 0) {
+            switch (ori) {
+              case 0:
+                Movimientos[i] = 3;
+                break;
+              case 1:
+                Movimientos[i] = 1;
+                break;
+              case 2:
+                Movimientos[i] = 0;
+                break;
+              case 3:
+                Movimientos[i] = 2;
+                break;
+              default:
+                Movimientos[i] = 0;
+            }
+            ori = 2;
+          }
+          break;
+      default:
+        Movimientos[i] = 0;
+        break;
+    }    
+  }
+  Movimientos[nR] = 4;
 }
   

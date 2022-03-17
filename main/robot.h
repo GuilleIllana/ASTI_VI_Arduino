@@ -8,10 +8,10 @@
 #include <QTRSensors.h>
 
 //Velocidades
-#define rightMaxSpeed 200 // max speed of the robot (0-255)
-#define leftMaxSpeed 200 // max speed of the robot (0-255)
-#define rightBaseSpeed 150 // this is the speed at which the motors should spin when the robot is perfectly on the line (0-255)
-#define leftBaseSpeed 150  // this is the speed at which the motors should spin when the robot is perfectly on the line (0-255)
+#define rightMaxSpeed 75 // max speed of the robot (0-255)
+#define leftMaxSpeed 75 // max speed of the robot (0-255)
+#define rightBaseSpeed 50 // this is the speed at which the motors should spin when the robot is perfectly on the line (0-255)
+#define leftBaseSpeed 50  // this is the speed at which the motors should spin when the robot is perfectly on the line (0-255)
 
 //Sensor siguelineas
 #define Kp 0.5 // experimentar (valores bajos)
@@ -21,7 +21,7 @@
 class Robot
 {
   public:
-    Robot(int en1, int en2, int in1,int in2, int in3, int in4);
+    Robot(int en1, int en2, int in1, int in2, int in3, int in4);
     void adelante(int DPWM, int IPWM);
     void brake();
     void derecha(int IPWM);
