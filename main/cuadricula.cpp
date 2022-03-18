@@ -119,7 +119,7 @@ void Cuadricula::printDistancia() {
     }
 }
 
-void Cuadricula::MovGenerator(int nR, int* Recorrido, int* Movimientos, int* orientation, int ori_ini) { // Movimientos: 0-siguelineas, 1-giro izquierda, 2-giro derecha 
+void Cuadricula::MovGenerator(int nR, int* Recorrido, int* Movimientos, int* Orientacion, int ori_ini) { // Movimientos: 0-siguelineas, 1-giro izquierda, 2-giro derecha 
   int ori; // 0-derecha, 1-arriba, 2-izquierda, 3-abajo;
 
   if (Recorrido[0] < _cols) {
@@ -137,7 +137,7 @@ void Cuadricula::MovGenerator(int nR, int* Recorrido, int* Movimientos, int* ori
   else {
     ori = ori_ini;
   }
-  orientation[0] = ori;
+  Orientacion[0] = ori;
   Movimientos[0] = 0;
   for (int i = 1; i < nR; i++) {
     int difr = Tablero[Recorrido[i+1]].getRow() - Tablero[Recorrido[i]].getRow();
@@ -228,7 +228,7 @@ void Cuadricula::MovGenerator(int nR, int* Recorrido, int* Movimientos, int* ori
         Movimientos[i] = 0;
         break;
     }
-    orientation[i] = ori;    
+    Orientacion[i] = ori;    
   }
   Movimientos[nR] = 4;
 }

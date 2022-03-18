@@ -18,7 +18,7 @@ Cuadricula cuadricula(6, 6, robs, cobs, 3);
 // Planificador
 int* Recorrido = (int*)malloc(36*sizeof(int));
 int* Movimientos = (int*)malloc(36*sizeof(int));
-int* orientation = (int*)malloc(36*sizeof(int));
+int* Orientacion = (int*)malloc(36*sizeof(int));
 int nRecorrido;
 int count = 1;
 
@@ -94,7 +94,7 @@ void setup() {
   robot.QTRcalibration();
   //IMUcalibration(); // La IMU ha muerto, oremos
   nRecorrido = cuadricula.Planner(4, 0, 2, 5, Recorrido);
-  cuadricula.MovGenerator(nRecorrido, Recorrido, Movimientos, orientation);
+  cuadricula.MovGenerator(nRecorrido, Recorrido, Movimientos, Orientacion);
   Serial.print("nRecorrido:");
   Serial.print(nRecorrido);
   Serial.print("\t Resultados:");
@@ -131,6 +131,13 @@ void setup() {
 void loop() {
   while (!robot.checkIntersection()) {
     robot.siguelineas(&integral, &lastError);
+    /*if (robot detecta obstaculo) {
+      ori_inicio = Orientacion[count-1];
+      posr = cuadricula.getRow();
+      posc = cuadricula.getCol();
+      nRecorrido = cuadricula.Planner(posr, posc, 2, 5, Recorrido);
+      cuadricula.MovGenerator(nRecorrido, Recorrido, Movimientos, Orientacion, ori_inicio);
+    }*/
   }
   digitalWrite(LED_BUILTIN, HIGH); // Encender al detectar intersección
   robot.brake();
