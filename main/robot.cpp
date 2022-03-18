@@ -52,6 +52,22 @@ void Robot::adelante(int DPWM, int IPWM) {
   analogWrite (_en2,IPWM); //Velocidad motor B Rueda de la derecha
 }
 
+void Robot::atras(int DPWM, int IPWM) {
+  if (DPWM > rightMaxSpeed) DPWM = rightMaxSpeed; //Prevencion
+  if (IPWM > leftMaxSpeed) IPWM = leftMaxSpeed; //Prevencion
+  if (DPWM < 0) DPWM = 0; 
+  if (IPWM < 0) IPWM = 0;
+
+  // Direccion motor A
+  digitalWrite (_in1, LOW);
+  digitalWrite (_in2, HIGH);
+  analogWrite (_en1,DPWM); //Velocidad motor A  Rueda izquierda Rueda debil
+
+  // Direccion motor B
+  digitalWrite (_in3, LOW);
+  digitalWrite (_in4, HIGH);
+  analogWrite (_en2,IPWM); //Velocidad motor B Rueda de la derecha
+}
 
 void Robot::izquierda(int DPWM) {
   // Direccion motor A
@@ -118,6 +134,23 @@ void Robot::siguelineas(int* integral, int* lastError) {
   int MotorIPWM = leftBaseSpeed + vel; //Base, modificar según parámetros PID
   
   adelante(MotorDPWM, MotorIPWM);
+}
+
+
+void Robot::siguelineasReverse(int* integral, int* lastError) {
+  int position = QTRreadLine(); //Lectura de la posición de la linea con respecto al robot
+  int error =  position - 3500; //El error irá desde +3500 a -3500 si es >0 linea a izq del sensor, si es <0 linea a la dch del sensor
+  *integral = *integral + error; 
+  int derivado = error - *lastError; 
+  
+  int vel = Kp * error + Kd * derivado + Ki * *integral;
+  *lastError = error; 
+
+  // Asignación de velocidades
+  int MotorDPWM = rightBaseSpeed + vel; //Base, modificar según parámetros PID
+  int MotorIPWM = leftBaseSpeed - vel; //Base, modificar según parámetros PID
+  
+  atras(MotorDPWM, MotorIPWM);
 }
 
 

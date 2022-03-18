@@ -23,10 +23,12 @@ class Robot
   public:
     Robot(int en1, int en2, int in1, int in2, int in3, int in4);
     void adelante(int DPWM, int IPWM);
+    void atras(int DPWM, int IPWM);
     void brake();
     void derecha(int IPWM);
     void izquierda(int DPWM);
     void siguelineas(int* integral, int* lastError);
+    void siguelineasReverse(int* integral, int* lastError);
     bool checkIntersection();
     void QTRcalibration();
     int QTRreadLine();

@@ -13,12 +13,14 @@ class Cuadricula
     int Planner(int ro, int co, int rf, int cf, int* Recorrido);
     int minDistance(int n);
     void MovGenerator(int nR, int* Recorrido, int* Movimientos, int* orientatation, int ori_ini=0);
+    void setObs(int idx_o, int idx_f);
     void printTablero();
     void printDistancia();
+    Casilla* Tablero;
   private:
     int _rows;
     int _cols;
-    Casilla* Tablero;  
+    int Mat_ady[6][6];
 };
 
 #endif

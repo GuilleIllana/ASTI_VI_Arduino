@@ -5,6 +5,11 @@ int integral = 0;
 int derivado = 0;
 int lastError = 0;
 
+
+// Ultrasonidos
+const int Trigger = 5;   //Pin digital 69 para el Trigger del sensor
+const int Echo = 4;   //Pin digital 4 para el echo del sensor
+  
 MPU6050 mpu(Wire);
 
 // Robot
@@ -13,7 +18,7 @@ Robot robot(2, 3, 30, 32, 34, 36);
 // Cuadricula
 int robs[] = {1,2,4};
 int cobs[] = {1,2,4};
-Cuadricula cuadricula(6, 6, robs, cobs, 3);
+Cuadricula cuadricula(6, 6, robs, cobs, 0);
 
 // Planificador
 int* Recorrido = (int*)malloc(36*sizeof(int));
@@ -71,6 +76,23 @@ void giro_imu(bool sentido, int valor_giro) { // false = giro izquierda, true = 
 }
 
 
+int ping(int TriggerPin, int EchoPin) {
+   long duration, distanceCm;
+   
+   digitalWrite(TriggerPin, LOW);  //para generar un pulso limpio ponemos a LOW 4us
+   delayMicroseconds(4);
+   digitalWrite(TriggerPin, HIGH);  //generamos Trigger (disparo) de 10us
+   delayMicroseconds(10);
+   digitalWrite(TriggerPin, LOW);
+   
+   duration = pulseIn(EchoPin, HIGH);  //medimos el tiempo entre pulsos, en microsegundos
+   
+   distanceCm = duration * 10 / 292/ 2;   //convertimos a distancia, en cm
+   if(distanceCm>50){distanceCm=50;}
+   return distanceCm;
+}
+
+
 void giro(bool sentido, int tgiro) { // false = giro izquierda, true = giro derecha
   if (sentido) {
     robot.derecha(80);
@@ -87,13 +109,17 @@ void giro(bool sentido, int tgiro) { // false = giro izquierda, true = giro dere
 }
 
 
+  
+
 void setup() {
-  // put your setup code here, to run once:
   Serial.begin(9600);
   pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(Trigger, OUTPUT); //pin como salida
+  pinMode(Echo, INPUT);  //pin como entrada
+  digitalWrite(Trigger, LOW);//Inicializamos el pin con 0
   robot.QTRcalibration();
   //IMUcalibration(); // La IMU ha muerto, oremos
-  nRecorrido = cuadricula.Planner(4, 0, 2, 5, Recorrido);
+  nRecorrido = cuadricula.Planner(2, 0, 2, 5, Recorrido);
   cuadricula.MovGenerator(nRecorrido, Recorrido, Movimientos, Orientacion);
   Serial.print("nRecorrido:");
   Serial.print(nRecorrido);
@@ -108,9 +134,10 @@ void setup() {
   Serial.print('\t');
   Serial.print(Recorrido[4]);
   Serial.print('\t');
-  Serial.println(Recorrido[5]);
+  Serial.print(Recorrido[5]);
   Serial.print('\t');
-  Serial.println(Recorrido[6]);
+  Serial.print(Recorrido[6]);
+  Serial.println();
   
   Serial.print("\t Movimientos:");
   Serial.print(Movimientos[0]);
@@ -123,21 +150,28 @@ void setup() {
   Serial.print('\t');
   Serial.print(Movimientos[4]);
   Serial.print('\t');
-  Serial.println(Movimientos[5]);
+  Serial.print(Movimientos[5]);
   Serial.print('\t');
-  Serial.println(Movimientos[6]);
+  Serial.print(Movimientos[6]);
+  Serial.println();
 }
 
 void loop() {
   while (!robot.checkIntersection()) {
     robot.siguelineas(&integral, &lastError);
-    /*if (robot detecta obstaculo) {
-      ori_inicio = Orientacion[count-1];
-      posr = cuadricula.getRow();
-      posc = cuadricula.getCol();
+    int dist = ping(Trigger, Echo);
+    if (dist < 20) {
+      int ori_inicio = Orientacion[count-1];
+      cuadricula.setObs(Recorrido[count-1], Recorrido[count]);
+      int posr = cuadricula.Tablero[Recorrido[count-1]].getRow();
+      int posc = cuadricula.Tablero[Recorrido[count-1]].getCol();
       nRecorrido = cuadricula.Planner(posr, posc, 2, 5, Recorrido);
       cuadricula.MovGenerator(nRecorrido, Recorrido, Movimientos, Orientacion, ori_inicio);
-    }*/
+      count = 0;
+      while (!robot.checkIntersection()) {
+        robot.siguelineasReverse(&integral, &lastError);
+      }
+    }
   }
   digitalWrite(LED_BUILTIN, HIGH); // Encender al detectar intersección
   robot.brake();
@@ -159,7 +193,7 @@ void loop() {
       robot.adelante(50,50);
       delay(500);
       robot.brake();
-      delay(5000);
+      //delay(5000);
       break;
     default:
       break;
@@ -167,4 +201,5 @@ void loop() {
   count++;
   delay(100);
   digitalWrite(LED_BUILTIN, LOW); //Apagar el led al acabar la intersección
+  
 }

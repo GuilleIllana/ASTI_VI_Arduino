@@ -12,7 +12,7 @@ Cuadricula::Cuadricula(int rows, int cols, int obs_row[], int obs_col[], int nob
     for (int i = 0; i < _rows; i++){
         for (int j = 0; j < _cols; j++){
           Tablero[i*_rows + j] = Casilla(i,j);
-          //Serial.println(i*_rows + j);
+          Mat_ady[i][j] = 1;
         }
     }
     // Adición de obstáculos
@@ -34,7 +34,7 @@ int Cuadricula::minDistance(int n)  {
     int dif_r = abs(Tablero[idx[i]].getRow() - Tablero[n].getRow());
     int dif_c = abs(Tablero[idx[i]].getCol() - Tablero[n].getCol());
     int sum = dif_r + dif_c;
-    if ((idx[i] < (_rows*_cols)) && ( idx[i] >= 0 ) && (sum == 1)) {
+    if ((idx[i] < (_rows*_cols)) && ( idx[i] >= 0 ) && (sum == 1) && (Mat_ady[Tablero[idx[i]].getRow()][Tablero[n].getCol()]) == 1) {
       idx_g[count] = idx[i];
       count++;
     }
@@ -231,5 +231,15 @@ void Cuadricula::MovGenerator(int nR, int* Recorrido, int* Movimientos, int* Ori
     Orientacion[i] = ori;    
   }
   Movimientos[nR] = 4;
+}
+
+
+void Cuadricula::setObs(int idx_o, int idx_f) {
+  int ro = Tablero[idx_o].getRow();
+  int co = Tablero[idx_o].getCol();
+  int rf = Tablero[idx_f].getRow();
+  int cf = Tablero[idx_f].getCol();
+  Mat_ady[ro][cf] = 0;
+  Mat_ady[rf][co] = 0;
 }
   
