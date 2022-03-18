@@ -18,6 +18,7 @@ Cuadricula cuadricula(6, 6, robs, cobs, 3);
 // Planificador
 int* Recorrido = (int*)malloc(36*sizeof(int));
 int* Movimientos = (int*)malloc(36*sizeof(int));
+int* orientation = (int*)malloc(36*sizeof(int));
 int nRecorrido;
 int count = 1;
 
@@ -93,7 +94,7 @@ void setup() {
   robot.QTRcalibration();
   //IMUcalibration(); // La IMU ha muerto, oremos
   nRecorrido = cuadricula.Planner(4, 0, 2, 5, Recorrido);
-  cuadricula.MovGenerator(nRecorrido, Recorrido, Movimientos);
+  cuadricula.MovGenerator(nRecorrido, Recorrido, Movimientos, orientation);
   Serial.print("nRecorrido:");
   Serial.print(nRecorrido);
   Serial.print("\t Resultados:");
