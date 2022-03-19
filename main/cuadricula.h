@@ -16,10 +16,12 @@ class Cuadricula
     void setObs(int idx_o, int idx_f);
     void printTablero();
     void printDistancia();
+    void printAvail();
     Casilla* Tablero;
   private:
     int _rows;
     int _cols;
+    int _nobs;
     int Mat_ady[6][6];
 };
 

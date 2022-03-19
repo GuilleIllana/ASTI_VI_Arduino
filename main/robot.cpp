@@ -143,7 +143,7 @@ void Robot::siguelineasReverse(int* integral, int* lastError) {
   *integral = *integral + error; 
   int derivado = error - *lastError; 
   
-  int vel = Kp * error + Kd * derivado + Ki * *integral;
+  int vel = (Kp * error + Kd * derivado + Ki * *integral)*0.7;
   *lastError = error; 
 
   // Asignación de velocidades

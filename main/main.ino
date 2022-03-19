@@ -16,16 +16,21 @@ MPU6050 mpu(Wire);
 Robot robot(2, 3, 30, 32, 34, 36);
 
 // Cuadricula
-int robs[] = {1,2,4};
-int cobs[] = {1,2,4};
-Cuadricula cuadricula(6, 6, robs, cobs, 0);
+int robs[3] = {3,3,3};
+int cobs[3] = {1,2,3};
+int nobs = 0;
+Cuadricula cuadricula(6, 6, robs, cobs, nobs);
 
 // Planificador
-int* Recorrido = (int*)malloc(36*sizeof(int));
-int* Movimientos = (int*)malloc(36*sizeof(int));
-int* Orientacion = (int*)malloc(36*sizeof(int));
+int Recorrido[36];
+int Movimientos[36];
+int Orientacion[36];
 int nRecorrido;
 int count = 1;
+int ro = 3;
+int co = 0;
+int rf = 0;
+int cf = 2;
 
 void IMUcalibration() {
   digitalWrite(LED_BUILTIN, HIGH); //Encender el led al empezar la calibración
@@ -109,8 +114,6 @@ void giro(bool sentido, int tgiro) { // false = giro izquierda, true = giro dere
 }
 
 
-  
-
 void setup() {
   Serial.begin(9600);
   pinMode(LED_BUILTIN, OUTPUT);
@@ -118,8 +121,9 @@ void setup() {
   pinMode(Echo, INPUT);  //pin como entrada
   digitalWrite(Trigger, LOW);//Inicializamos el pin con 0
   robot.QTRcalibration();
+  cuadricula.printAvail();
   //IMUcalibration(); // La IMU ha muerto, oremos
-  nRecorrido = cuadricula.Planner(2, 0, 2, 5, Recorrido);
+  nRecorrido = cuadricula.Planner(ro, co, rf, cf, Recorrido);
   cuadricula.MovGenerator(nRecorrido, Recorrido, Movimientos, Orientacion);
   Serial.print("nRecorrido:");
   Serial.print(nRecorrido);
@@ -137,6 +141,8 @@ void setup() {
   Serial.print(Recorrido[5]);
   Serial.print('\t');
   Serial.print(Recorrido[6]);
+  Serial.print('\t');
+  Serial.print(Recorrido[7]);
   Serial.println();
   
   Serial.print("\t Movimientos:");
@@ -153,53 +159,92 @@ void setup() {
   Serial.print(Movimientos[5]);
   Serial.print('\t');
   Serial.print(Movimientos[6]);
+  Serial.print('\t');
+  Serial.print(Movimientos[7]);
   Serial.println();
 }
 
 void loop() {
+  while (robot.checkIntersection()) {
+    robot.siguelineas(&integral, &lastError);
+  }
   while (!robot.checkIntersection()) {
     robot.siguelineas(&integral, &lastError);
-    int dist = ping(Trigger, Echo);
-    if (dist < 20) {
+    /*int dist = ping(Trigger, Echo);
+    if (dist < 10) {
       int ori_inicio = Orientacion[count-1];
-      cuadricula.setObs(Recorrido[count-1], Recorrido[count]);
+      cuadricula.Tablero[Recorrido[count]].setAvail(false);
       int posr = cuadricula.Tablero[Recorrido[count-1]].getRow();
       int posc = cuadricula.Tablero[Recorrido[count-1]].getCol();
-      nRecorrido = cuadricula.Planner(posr, posc, 2, 5, Recorrido);
+      nRecorrido = cuadricula.Planner(posr, posc, rf, cf, Recorrido);
       cuadricula.MovGenerator(nRecorrido, Recorrido, Movimientos, Orientacion, ori_inicio);
+      Serial.print("\t Movimientos:");
+      Serial.print(Movimientos[0]);
+      Serial.print('\t');
+      Serial.print(Movimientos[1]);
+      Serial.print('\t');
+      Serial.print(Movimientos[2]);
+      Serial.print('\t');
+      Serial.print(Movimientos[3]);
+      Serial.print('\t');
+      Serial.print(Movimientos[4]);
+      Serial.print('\t');
+      Serial.print(Movimientos[5]);
+      Serial.print('\t');
+      Serial.print(Movimientos[6]);
+      Serial.println();
       count = 0;
+      Serial.print("ATRAS");
       while (!robot.checkIntersection()) {
         robot.siguelineasReverse(&integral, &lastError);
       }
-    }
+    }*/
   }
   digitalWrite(LED_BUILTIN, HIGH); // Encender al detectar intersección
   robot.brake();
   delay(200);
+  
   switch (Movimientos[count]){
     case 0:
+      Serial.print("SEGUIR");
       robot.brake();
       break;
     case 1:
+      Serial.print("IZQUIERDA");
       giro(false, 750);
       break;
     case 2:
+      Serial.print("DERECHA");
       giro(true, 750);
       break;
     case 3:
+      Serial.print("GIRO 180");
       giro(true, 2000);
       break;
     case 4:
+      Serial.print("FINAL");
       robot.adelante(50,50);
-      delay(500);
+      delay(200);
       robot.brake();
-      //delay(5000);
+      delay(10000);
       break;
     default:
       break;
   }
+  Serial.println();
   count++;
   delay(100);
-  digitalWrite(LED_BUILTIN, LOW); //Apagar el led al acabar la intersección
+  if (Movimientos[count] == 4) {  
+     Serial.print("FINAL");  
+      robot.adelante(50,50);
+      delay(500);    
+      robot.brake();
+      delay(1000000);
+  }
+  else {
+    delay(200);
+    digitalWrite(LED_BUILTIN, LOW); //Apagar el led al acabar la intersección
+  }
+  
   
 }

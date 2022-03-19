@@ -8,8 +8,8 @@
 #include <QTRSensors.h>
 
 //Velocidades
-#define rightMaxSpeed 75 // max speed of the robot (0-255)
-#define leftMaxSpeed 75 // max speed of the robot (0-255)
+#define rightMaxSpeed 80 // max speed of the robot (0-255)
+#define leftMaxSpeed 80 // max speed of the robot (0-255)
 #define rightBaseSpeed 50 // this is the speed at which the motors should spin when the robot is perfectly on the line (0-255)
 #define leftBaseSpeed 50  // this is the speed at which the motors should spin when the robot is perfectly on the line (0-255)
 

@@ -19,7 +19,7 @@ int Casilla::getCol() {
 }
 
 
-int Casilla::getAvail() {
+bool Casilla::getAvail() {
   return _avail;
 }
 

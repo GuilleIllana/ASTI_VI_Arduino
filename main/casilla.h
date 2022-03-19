@@ -11,7 +11,7 @@ class Casilla
     Casilla(int row, int col);
     int getRow();
     int getCol();
-    int getAvail();
+    bool getAvail();
     float getDist();
     bool getExpl();
     void setAvail(bool avail);

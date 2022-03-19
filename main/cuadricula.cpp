@@ -5,7 +5,7 @@
 Cuadricula::Cuadricula(int rows, int cols, int obs_row[], int obs_col[], int nobs) {
     _rows = rows;
     _cols = cols;
-    
+    _nobs = nobs;
     Tablero = (Casilla*)malloc(rows * cols * sizeof(Casilla));
         
     // Construcción del tablero
@@ -18,6 +18,8 @@ Cuadricula::Cuadricula(int rows, int cols, int obs_row[], int obs_col[], int nob
     // Adición de obstáculos
     for (int i = 0; i < nobs; i++){
       Tablero[rows*obs_row[i]+obs_col[i]].setAvail(false);
+      int hola=rows*obs_row[i]+obs_col[i];
+      Serial.println(hola);
     }  
 }
 
@@ -34,9 +36,13 @@ int Cuadricula::minDistance(int n)  {
     int dif_r = abs(Tablero[idx[i]].getRow() - Tablero[n].getRow());
     int dif_c = abs(Tablero[idx[i]].getCol() - Tablero[n].getCol());
     int sum = dif_r + dif_c;
-    if ((idx[i] < (_rows*_cols)) && ( idx[i] >= 0 ) && (sum == 1) && (Mat_ady[Tablero[idx[i]].getRow()][Tablero[n].getCol()]) == 1) {
+    if ((idx[i] < (_rows*_cols)) && ( idx[i] >= 0 ) && (sum == 1) && (Tablero[idx[i]].getAvail() == true)) {
       idx_g[count] = idx[i];
       count++;
+    }
+    else {
+//      Serial.print(idx[i]);
+//      Serial.println();
     }
   }
   
@@ -59,7 +65,10 @@ int Cuadricula::Planner(int ro, int co, int rf, int cf, int Recorrido[]) {
   // for a graph represented using adjacency matrix representation 
   int count = 0, idx_ant = ro*_rows+co;
   int idx = 0;
-    
+
+  for (int i = 0; i < (_rows*_cols); i++) {
+    Recorrido[i] = 0;
+  }
   // Initialize all distances and explore as false
   for (int i = 0; i < _rows; i++) {
     for (int j = 0; j < _cols; j++) {
@@ -67,8 +76,7 @@ int Cuadricula::Planner(int ro, int co, int rf, int cf, int Recorrido[]) {
       Tablero[i*_rows + j].setExpl(false);
       if ((i == 0) || (j == 0) || (i == (_rows-1)) || (j == (_cols-1)))
         Tablero[i*_rows + j].setAvail(false);
-      else
-        Tablero[i*_rows + j].setAvail(true);
+
     }
   }
   Tablero[ro*_rows + co].setAvail(true);
@@ -119,19 +127,35 @@ void Cuadricula::printDistancia() {
     }
 }
 
+void Cuadricula::printAvail() {  
+    // Calling printer
+    for (int i = 0; i < _rows; i++) {
+        for (int j = 0; j < _cols; j++) {
+          Serial.print(Tablero[i*_rows + j].getAvail());
+          Serial.print('\t');
+        }
+    Serial.println();
+    }
+}
+
+
 void Cuadricula::MovGenerator(int nR, int* Recorrido, int* Movimientos, int* Orientacion, int ori_ini) { // Movimientos: 0-siguelineas, 1-giro izquierda, 2-giro derecha 
   int ori; // 0-derecha, 1-arriba, 2-izquierda, 3-abajo;
 
+  for (int i = 0; i < (_rows*_cols); i++) {
+    Movimientos[i] = 0;
+  }
+  
   if (Recorrido[0] < _cols) {
     ori = 3;
   }
-  else if (Recorrido[0] % _cols == 0) {
+  else if ((Recorrido[0] % _cols) == 0) {
     ori = 0;
   }
-  else if ((Recorrido[0] > _cols*(_rows-1)) && (Recorrido[0] < _rows*_cols)) {
+  else if ((Recorrido[0] > (_cols*(_rows-1))) && (Recorrido[0] < (_rows*_cols))) {
     ori = 1;
   }
-  else if (Recorrido[0]+1 % _cols == 0) {
+  else if (((Recorrido[0]+1) % _cols) == 0) {
     ori = 2;
   }
   else {
@@ -230,7 +254,7 @@ void Cuadricula::MovGenerator(int nR, int* Recorrido, int* Movimientos, int* Ori
     }
     Orientacion[i] = ori;    
   }
-  Movimientos[nR] = 4;
+  Movimientos[nR-1] = 4;
 }
 
 
